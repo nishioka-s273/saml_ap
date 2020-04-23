@@ -14,7 +14,7 @@ if(isset($_COOKIE["sp"])){
 <body>
 <h1>新規IdPの登録</h1>
 <h2>引継IDを入力してください</h2>
-<form action="http://ap.local/sample/movin2.php" method="post">
+<form action="https://ap.local/sample/movin2.php" method="post">
 <input type="text" name="mig_id" >
 <input type="submit" value="送信" >
 </form>

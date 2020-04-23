@@ -6,13 +6,13 @@ $attr=$as->getAttributes();
 $name=$as->getAuthData("saml:sp:NameID");
 
 include('db_login.php');
-$connection = mysql_connect($db_host, $db_username, $db_password);
+$connection = mysqli_connect($db_host, $db_username, $db_password);
 if(!$connection){
-  die ("Could not connect to the database: <br />". mysql_error());
+  die ("[error1] Could not connect to the database: <br />". mysqli_error());
 }
-$db_select = mysql_select_db($db_database);
+$db_select = mysqli_select_db($connection, $db_database);
 if(!$db_select){
-  die ("Could not select the database: <br />". mysql_error());
+  die ("[error2] Could not select the database: <br />". mysqli_error());
 }
 
 $sp = '';
@@ -22,11 +22,11 @@ if (isset($_COOKIE["sp"])){
 	$sp = $_COOKIE["sp"];
 }
 // 引継完了後に遷移するSPのURL
-$sp_url = "http://".$sp.".local/sample/comp.php";
+$sp_url = "https://".$sp.".local/sample/comp.php";
 
 $mig_id = $_POST["mig_id"];
 
-$uid_idp = $attr['uid'][0];
+$uid_idp = $attr['uid'][0].'_ap';
 // $new_uid = $uid.'_ap';
 
 $idp = $attr['idp'][0];
@@ -34,12 +34,12 @@ $idp = $attr['idp'][0];
 
 // ユーザが入力した引継IDに該当するAP内ユーザを検索
 $query = "SELECT uid FROM users WHERE mig_id_ap = '$mig_id'";
-$result = mysql_query($query);
+$result = mysqli_query($connection, $query);
 if(!$result){
-	die ("Could not query the database: <br />".mysql.error());
+	die ("[error3] Could not query the database: <br />".mysqli_error());
 }
 else{
-	$result_row = mysql_fetch_row($result);
+	$result_row = mysqli_fetch_row($result);
  	$uid_ap = $result_row[0];
 	// 該当の引継IDが存在しない場合引継IDが間違っている
 	if($uid_ap == NULL){
@@ -48,19 +48,19 @@ else{
 	else{
 		// 検索結果のユーザに対して，新しいIdPから受け取ったユーザIDを登録する
 		$query2 = "UPDATE users SET uid_idp = '$uid_idp' WHERE mig_id_ap = '$mig_id'";
-		$result2 = mysql_query($query2);
+		$result2 = mysqli_query($connection, $query2);
 		if(!$result2){
-			die ("Could not query the database: <br />".mysql.error());
+			die ("[error4] Could not query the database: <br />".mysqli_error());
 		}
 		else{
 			// 該当ユーザの遷移元SPに対する引継IDを取得する
 			$query3 = "SELECT mig_id_".$sp." FROM users WHERE mig_id_ap = '$mig_id'";
-			$result3 = mysql_query($query3);
+			$result3 = mysqli_query($connection, $query3);
 			if(!$result3){
-				die ("Could not query the database: <br>".mysql_error());
+				die ("[error5] Could not query the database: <br>".mysqli_error());
 			}
 			else{
-				$result_row3 = mysql_fetch_row($result3);
+				$result_row3 = mysqli_fetch_row($result3);
 				$mig_id_sp = $result_row3[0];
 				// SPの引継IDが存在しない場合，登録できていない
 				if($mig_id_sp == NULL){
@@ -70,10 +70,10 @@ else{
 					// 引越し完了かどうか，引越し先IdPなどを登録する
 					$query5 = "UPDATE users SET mig_comp = 1 WHERE mig_id_ap = '$mig_id'";
 					$query6 = "UPDATE users SET dstIdP = '$idp' WHERE mig_id_ap = '$mig_id'";
-					$result5 = mysql_query($query5);
-					$result6 = mysql_query($query6);
+					$result5 = mysqli_query($connection, $query5);
+					$result6 = mysqli_query($connection, $query6);
 					if(!$result5 or !$result6) {
-						die ("Could not query the database: <br />".mysql_error());
+						die ("[error6] Could not query the database: <br />".mysqli_error());
 					}
 					else {
 						echo "IdPの引越しが完了しました！<br />";
