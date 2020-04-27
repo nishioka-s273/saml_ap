@@ -16,15 +16,20 @@ if(!$db_select){
 }
 
 $sp = '';
+$ret_url2 = '';
 
 // 遷移元のSPをクッキーから取得
 // get the source SP by cookie
 if (isset($_COOKIE["sp"])){
 	$sp = $_COOKIE["sp"];
 }
-// 引継完了後に遷移するSPのURL
-// redirect URL of SP after migration completion
-$sp_url = "https://".$sp.".local/sample/complete.php";
+if (isset($_COOKIE["ret_url2"])){
+	// 引継完了後に遷移するSPのURL
+	// redirect URL of SP after migration completion
+	$sp_url = $_COOKIE["ret_url2"];
+}
+
+//$sp_url = "https://".$sp.".local/sample/complete.php";
 
 $mig_id = $_POST["mig_id"];
 

@@ -29,7 +29,8 @@ if(!$db_select){
     $idp = $attr['idp'][0];  // どのIdPを利用しているか; which IdP the user uses
 	
 	$from_sp = $_POST["sp"];  // which SP the user came from
-	$ret_url = "https://".$from_sp.".local/sample/start.php";  // 最終的に戻るSPのURL; return URL
+	//$ret_url = "https://".$from_sp.".local/sample/start.php";  // 最終的に戻るSPのURL; return URL
+	$ret_url = $_POST["ret_url"];
     $sp = 'mig_id_'.$from_sp;
 
 	// サイトを訪れているユーザがAP内にアカウントを持っているか確認する

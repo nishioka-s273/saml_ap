@@ -7,8 +7,11 @@ $name=$as->getAuthData("saml:sp:NameID");
 
 // 遷移元のSPをクッキーから取得
 // get the source SP by cookie
-if(isset($_COOKIE["sp"])){
+if (isset($_COOKIE["sp"])){
 	$sp = $_COOKIE["sp"];
+}
+if(isset($_COOKIE["ret_url2"])){
+	$ret_url2 = $_COOKIE["ret_url2"];
 }
 ?>
 <html>

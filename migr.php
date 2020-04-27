@@ -26,8 +26,10 @@ $uid_idp = $attr['uid'][0].'_ap';
 //$user_id = $idp_user_id.'_ap';
 $idp = $attr['idp'][0];
 $sp = $_POST["sp"];
-$ret_url = 'https://'.$sp.'.local/sample/start.php';
-$ret_url2 = 'https://'.$sp.'.local/sample/complete.php';
+//$ret_url = 'https://'.$sp.'.local/sample/start.php';
+$ret_url = $_POST["ret_url"];
+//$ret_url2 = 'https://'.$sp.'.local/sample/complete.php';
+$ret_url2 = $_POST["ret_url2"];
 
 // ログイン中のユーザに該当するIDが存在するか確認する
 // check if the user exists
@@ -52,9 +54,10 @@ else{
 			echo "<a href=".$ret_url.">Back to SP</a>";
 		}
 
-		// 遷移元のSPをクッキーに保存する(暫定として1時間)
-		// save the source SP in cookie (for 1 hour)
+		// 遷移元のSPおよびSPの引継完了画面URLをクッキーに保存する(暫定として1時間)
+		// save the source SP and redirect URL in cookie (for 1 hour)
 		setcookie("sp", $sp, time() + 60*60);
+		setcookie("ret_url2", $ret_url2, time() + 60*60);
 	}
 	else{
 		// APの引継IDがすでに発行済であるか確認する
@@ -90,9 +93,10 @@ else{
 		echo "<p>You can also back to the SP in the case that your new IdP is not available now.<br>Please log-in with new IdP later. (The migration will not be completed now)<p>";
 		echo '<a href='.$ret_url.'>Back to SP (without completing the migration)<br /></a>';
 
-		// 遷移元のSPをクッキーに保存する(暫定として1時間)
-		// save the source SP in cookie (for 1 hour)
-        setcookie("sp", $sp, time() + 60*60);
+		// 遷移元のSPおよびSPの引継完了画面URLをクッキーに保存する(暫定として1時間)
+		// save the source SP and redirect URL in cookie (for 1 hour)
+		setcookie("sp", $sp, time() + 60*60);
+        setcookie("ret_url2", $ret_url2, time() + 60*60);
 
 		// 既に引越し済のユーザであるか確認する
 		// check if this user has already migrated in another SP
