@@ -18,21 +18,22 @@ if(!$db_select){
 $sp = '';
 
 // 遷移元のSPをクッキーから取得
+// get the source SP by cookie
 if (isset($_COOKIE["sp"])){
 	$sp = $_COOKIE["sp"];
 }
 // 引継完了後に遷移するSPのURL
-$sp_url = "https://".$sp.".local/sample/comp.php";
+// redirect URL of SP after migration completion
+$sp_url = "https://".$sp.".local/sample/complete.php";
 
 $mig_id = $_POST["mig_id"];
 
 $uid_idp = $attr['uid'][0].'_ap';
-// $new_uid = $uid.'_ap';
 
 $idp = $attr['idp'][0];
-//$uid_idp = 'uid_'.$idp;
 
 // ユーザが入力した引継IDに該当するAP内ユーザを検索
+// Search the user corresponding to the migration ID
 $query = "SELECT uid FROM users WHERE mig_id_ap = '$mig_id'";
 $result = mysqli_query($connection, $query);
 if(!$result){
@@ -42,11 +43,13 @@ else{
 	$result_row = mysqli_fetch_row($result);
  	$uid_ap = $result_row[0];
 	// 該当の引継IDが存在しない場合引継IDが間違っている
+	// if no user corresponding the migration ID, the user may entered wrong migration ID
 	if($uid_ap == NULL){
-		echo "引継IDが間違っています";
+		echo "You have entered wrong migration ID";
 	}
 	else{
 		// 検索結果のユーザに対して，新しいIdPから受け取ったユーザIDを登録する
+		// register the user ID from new IdP as uid_idp, for the user correspoinding to the migration ID
 		$query2 = "UPDATE users SET uid_idp = '$uid_idp' WHERE mig_id_ap = '$mig_id'";
 		$result2 = mysqli_query($connection, $query2);
 		if(!$result2){
@@ -54,6 +57,7 @@ else{
 		}
 		else{
 			// 該当ユーザの遷移元SPに対する引継IDを取得する
+			// get the migration ID for source SP
 			$query3 = "SELECT mig_id_".$sp." FROM users WHERE mig_id_ap = '$mig_id'";
 			$result3 = mysqli_query($connection, $query3);
 			if(!$result3){
@@ -63,11 +67,13 @@ else{
 				$result_row3 = mysqli_fetch_row($result3);
 				$mig_id_sp = $result_row3[0];
 				// SPの引継IDが存在しない場合，登録できていない
+				// if no migration ID for the SP exists, registration has not completed
 				if($mig_id_sp == NULL){
-					echo "このSPは引越しサービスに登録されていません";
+					echo "You have not registered this SP for this migration service.";
 				}
 				else{
 					// 引越し完了かどうか，引越し先IdPなどを登録する
+					// register the destination IdP and mig_comp(if the migration has completed or not)
 					$query5 = "UPDATE users SET mig_comp = 1 WHERE mig_id_ap = '$mig_id'";
 					$query6 = "UPDATE users SET dstIdP = '$idp' WHERE mig_id_ap = '$mig_id'";
 					$result5 = mysqli_query($connection, $query5);
@@ -76,11 +82,11 @@ else{
 						die ("[error6] Could not query the database: <br />".mysqli_error());
 					}
 					else {
-						echo "IdPの引越しが完了しました！<br />";
-						echo $mig_id_sp;
+						echo "Migration for IdP has completed!<br />";
 
 						// 該当の引継IDをSPに送信する
-						$htmlchar = '<form action="'.$sp_url.'" method="post"><input type="hidden" name="mig_id_sp" value="'.$mig_id_sp.'"><input type="submit" value="SPに戻って引越しを終了する"></form>';
+						// send the migration ID to SP
+						$htmlchar = '<form action="'.$sp_url.'" method="post"><input type="hidden" name="mig_id_sp" value="'.$mig_id_sp.'"><input type="submit" value="Return to SP and Complete the Migration"></form>';
 						echo $htmlchar;
 					}
 				}

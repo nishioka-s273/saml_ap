@@ -25,7 +25,7 @@ if(!$db_select){
     echo $mig_id."<br />";
 
 	$uid_idp = $attr['uid'][0].'_ap';  // IdPから受け取るユーザID; user ID from the IdP
-	echo 'user ID from the IdP : '.$uid_idp.'<br/>';
+	echo 'Your user ID in this AP : '.$uid_idp.'<br/>';
     $idp = $attr['idp'][0];  // どのIdPを利用しているか; which IdP the user uses
 	
 	$from_sp = $_POST["sp"];  // which SP the user came from
@@ -87,11 +87,11 @@ if(!$db_select){
 							die ("[error7] Could not query the database: <br />".mysqli_error());
 						}
 						else{
-							echo "User Registration Completed!";
+							echo "<h2>User Registration Completed!</h2>";
 						}
 					}
 					else{
-						echo "Your are the registrated user";
+						echo "<h2>Your are the registrated user</h2>";
 					}
 				}
 			}
@@ -117,12 +117,12 @@ if(!$db_select){
 					die ("[error9] Could not query the database: <br />".mysqli_error());
 				}
 				else{
-					echo "Service Registration Completed!";
+					echo "<h2>Service Registration for this SP has Completed!</h2>";
 				}
 			}
 			else{
 				$query2 = "INSERT INTO users VALUES ('$uid', NULL, NULL, 0, NULL, 0, NULL, NULL, '$uid_idp', '$uid_num')";
-				echo "You are the registrated user";
+				echo "<h2>You are the registrated user</h2>";
 			}
 		}
 	}
